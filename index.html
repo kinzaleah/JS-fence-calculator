@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+    <header>
+
+    </header>
+    <body>
+
+        <h1>Javascript Calculator</h1>
+        <h2>Q1: How many panels should I buy so all my posts are used up?</h2>
+
+       
+            <p>Please enter the number of posts you have:</p>
+            <input type='text' name ='posts'>
+            <button id='answer-one' >Calculate!</button>
+            <div class='answer-one'></div>
+
+        <h2>Q2: How many posts and panels do I need to make a fence of length Z?</h2>
+
+       
+            <p>Please enter the length you would like:</p>
+            <input type='text' name ='length'>
+            <button id='answer-two' >Calculate!</button>
+            <div class='answer-two'></div>
+
+        <h2>Q2: What’s the biggest fence I can make?</h2>
+
+       
+            <p>Please enter how many posts and panels you have:</p>
+            Posts: 
+            <input type='text' name ='posts-three'>
+            Post width:
+            <input type='text' name ='posts-width'>
+            <br>
+            
+            
+            Panels: 
+            <input type='text' name ='panels-three'>
+            Panel width:
+            <input type='text' name ='panels-width'>
+            <br>
+            <button id='answer-three' >Calculate!</button>
+            <div class='answer-three'></div>
+            
+
+
+        <script>
+
+            let postWidth = 2;
+            let panelWidth = 7;
+            
+            let markup = "";
+
+            // ANSWER ONE
+            
+            // First function - might need to reuse this so keep it separate
+            const calculatePanels = posts => {
+                let panels = posts - 1;
+                               
+                return panels;
+            };
+
+           // Function to do calc and return html to display the answer
+           const returnHowManyPanels = () => {
+               // as I'm doing this as eventlistener i can't pass it posts so i need to declare it here
+               // assign posts based on input & turn into integer
+               let posts = parseInt(document.querySelector('[name="posts"]').value);
+               
+               // get number of panels 
+               let panels = calculatePanels(posts); 
+               
+               // add markup to display               
+               let markup = `<br> You need ${panels} panels`;
+               
+               // grab the answer div
+               let answer = document.querySelector('.answer-one');
+
+               // add markup to the answer div 
+               answer.innerHTML = markup;
+               
+            };
+                     
+            //  when button is clicked run this function
+            document.getElementById('answer-one').addEventListener('click', returnHowManyPanels);
+
+            
+            // ANSWER TWO
+
+            
+
+            const calculateLength = () => {
+                
+                let length = parseInt(document.querySelector('[name="length"]').value);
+                
+                // length = (panels * panelWidth) + ((panels + 1) * postWidth )
+
+                //  the number of panels should dictate how many posts as they're bigger
+                // so if i have 14 panels then i need 15 posts. though this would take it over the max.
+                
+                let numPanels = 0;
+                let numPosts = 1;
+                let markup = "";
+             
+                // starts with 1 post so the length will start as that
+                let constructedLength = postWidth;
+
+                // loop through increase panels & constructedLength each time until you reach the length input
+                while(constructedLength < length ){
+                    numPanels++;
+                    console.log(numPanels);   
+                                       
+                    constructedLength += (postWidth + panelWidth);
+                    console.log(constructedLength);  
+                    
+                }
+
+                if(constructedLength === length){
+                    console.log('does this work');    
+
+                    markup = ` 
+                        <br>
+                        You want a fence ${length}m long.  You need ${numPanels} panels and ${numPanels + 1} posts.
+                    `;
+             
+                }else{
+                    
+                    let underPanels = numPanels-1;
+                    let overPanels = numPanels;
+
+                       
+                    let underTotal = (underPanels * panelWidth) + ((underPanels +1) * postWidth);
+                    let overTotal = (overPanels * panelWidth) + ((overPanels +1) * postWidth);
+
+                  
+
+                    markup = ` 
+                        <br>
+                        You want a fence ${length}m long.  
+                        <br> 
+                        You can either have a shorter fence with ${underPanels} panels and ${underPanels + 1} posts.
+                        This will give you a fence ${underTotal}m long.
+                        <br>
+                        Or you can have a longer fence with ${overPanels} panels and ${overPanels + 1} posts.
+                        This will give you a fence ${overTotal}m long.
+                    `;                               
+                }
+
+                  // grab the answer div
+                  let answer = document.querySelector('.answer-two');
+
+                    // add markup to the answer div 
+                    answer.innerHTML = markup;
+            };
+
+            //  when button is clicked run this function
+            document.getElementById('answer-two').addEventListener('click', calculateLength);
+
+            
+            
+            // ANSWER THREE - I have M posts and N panels, what’s the biggest fence I can make? (And what resources will I have remaining)
+
+            const calculateTotal = () => {
+                
+                let inputPosts = parseInt(document.querySelector('[name="posts-three"]').value);
+                let inputPanels = parseInt(document.querySelector('[name="panels-three"]').value);
+
+                let postWidth = parseInt(document.querySelector('[name="posts-width"]').value);
+                let panelWidth = parseInt(document.querySelector('[name="panels-width"]').value);
+                
+                let length;
+                let leftoverPanels = 0;
+                let leftoverPosts = 0;
+
+                // posts must be 1 longer than panel & 2 posts to even do it
+                if(inputPosts < 2 || inputPanels < 1){
+                    length = 0;
+                }
+
+                if(inputPanels >= inputPosts){
+                    
+                   // TOO MANY PANELS
+
+                   let numPanels = inputPosts - 1;
+
+                   length = (inputPosts * postWidth) + (numPanels * panelWidth);
+                   leftoverPanels = inputPanels - numPanels;
+                   
+
+                } else {
+                    // TOO MANY POSTS
+
+                   let numPosts = inputPanels + 1;
+
+                    length = (numPosts * postWidth) + (inputPanels * panelWidth);
+                    leftoverPosts = inputPosts - numPosts;
+                }
+
+                
+                let markup = ` <br>
+                    Post width: ${postWidth}m <br>
+                    Panel width: ${panelWidth}m <br>
+                    You can make a fence ${length}m long. You will have ${leftoverPanels} panels and ${leftoverPosts} posts remaining.
+                `;
+
+                // grab the answer div
+               let answer = document.querySelector('.answer-three');
+
+                // add markup to the answer div 
+                answer.innerHTML = markup;
+
+            };
+
+            //  when button is clicked run this function
+            document.getElementById('answer-three').addEventListener('click', calculateTotal);
+           
+
+
+        </script>
+    </body>
+</html>
